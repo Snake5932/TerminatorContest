@@ -8,34 +8,40 @@ import (
 
 type Trs struct {
 	Name string // Имя конструктора или переменной
-	Args []Trs // конструкторы и переменные в аргументах
-	Type int //тип
+	Args []Trs  // конструкторы и переменные в аргументах
+	Type int    //тип (0 - конструктор, 1 - перменная, 2 - константа)
 }
 
 type Rule struct {
-	Left Trs  // левая и правая части
+	Left  Trs // левая и правая части
 	Right Trs
 }
 
 type Task struct {
-	Input []byte
-	Rules []Rule //список правил
-	Vars map[string]int //список аргументов, int для альфа преобразования
+	Input        []byte
+	Rules        []Rule         //список правил
+	Vars         map[string]int //список аргументов, int для альфа преобразования
 	Constructors map[string]int //список конструкторов с их арностью
 }
 
-func (task *Task)SkipSpaces() {
+func (task *Task) Init(input []byte) {
+	task.Vars = make(map[string]int)
+	task.Constructors = make(map[string]int)
+	task.Input = input
+}
+
+func (task *Task) SkipSpaces() {
 	for len(task.Input) != 0 && (task.Input[0] == ' ' || task.Input[0] == 9) {
 		task.Input = task.Input[1:]
 	}
 }
 
-func (task *Task)getIdent() (string, error) {
+func (task *Task) getIdent() (string, error) {
 	if len(task.Input) == 0 {
 		return "", errors.New("ident missing")
 	}
 	nSymb := task.Input[0]
-	if nSymb < 'A' || (nSymb > 'Z' && nSymb < 'a') || nSymb > 'z'{
+	if nSymb < 'A' || (nSymb > 'Z' && nSymb < 'a') || nSymb > 'z' {
 		fmt.Println(nSymb)
 		return "", errors.New("wrong declaration symbol")
 	}
@@ -43,8 +49,8 @@ func (task *Task)getIdent() (string, error) {
 	var buffer []byte
 	buffer = append(buffer, nSymb)
 	for len(task.Input) != 0 && (task.Input[0] >= '0' && task.Input[0] <= '9' ||
-								 task.Input[0] >= 'A' && task.Input[0] <= 'Z' ||
-								 task.Input[0] >= 'a' && task.Input[0] <= 'z') {
+		task.Input[0] >= 'A' && task.Input[0] <= 'Z' ||
+		task.Input[0] >= 'a' && task.Input[0] <= 'z') {
 		buffer = append(buffer, task.Input[0])
 		task.Input = task.Input[1:]
 		nSymb = task.Input[0]
@@ -52,7 +58,7 @@ func (task *Task)getIdent() (string, error) {
 	return string(buffer), nil
 }
 
-func (task *Task)ParseInput() error {
+func (task *Task) ParseInput() error {
 	err := task.parseVars()
 	if err != nil {
 		return err
@@ -80,7 +86,7 @@ func (task *Task)ParseInput() error {
 	return nil
 }
 
-func (task *Task)parseVars() error {
+func (task *Task) parseVars() error {
 	task.SkipSpaces()
 	if len(task.Input) <= 1 {
 		return errors.New("vars list is absent")
@@ -111,7 +117,7 @@ func (task *Task)parseVars() error {
 	return nil
 }
 
-func (task *Task)parseVarsList() error {
+func (task *Task) parseVarsList() error {
 	task.SkipSpaces()
 	ident, err := task.getIdent()
 	if err != nil {
@@ -134,7 +140,7 @@ func (task *Task)parseVarsList() error {
 	return nil
 }
 
-func (task *Task)parseRules() error {
+func (task *Task) parseRules() error {
 	if len(task.Input) == 0 {
 		return nil
 	}
@@ -151,11 +157,11 @@ func (task *Task)parseRules() error {
 		return err
 	}
 	task.Rules = append(task.Rules, Rule{Left: trs1,
-										Right: trs2})
+		Right: trs2})
 	return nil
 }
 
-func (task *Task)parseRule() (Trs, error) {
+func (task *Task) parseRule() (Trs, error) {
 	task.SkipSpaces()
 	nTermS, err := task.getIdent()
 	if err != nil {
@@ -167,22 +173,28 @@ func (task *Task)parseRule() (Trs, error) {
 			task.Vars[nTermS] += 1
 			alpha := strconv.Itoa(task.Vars[nTermS])
 			return Trs{Name: nTermS + alpha,
-					   Type: 0}, nil
+				Type: 0}, nil
 		}
+		//if _, ok := task.Constructors[nTermS]; ok {
+		//	if task.Constructors[nTermS] != 0 {
+		//		return Trs{}, errors.New("polymorphism: " + nTermS)
+		//	}
+		//} else {
+		//	task.Constructors[nTermS] = 0
+		//}
+		//return Trs{Name: nTermS,
+		//	Type: 1}, nil
 		if _, ok := task.Constructors[nTermS]; ok {
 			if task.Constructors[nTermS] != 0 {
 				return Trs{}, errors.New("polymorphism: " + nTermS)
 			}
-		} else {
-			task.Constructors[nTermS] = 0
 		}
-		return Trs{Name: nTermS,
-				   Type: 1}, nil
+		return Trs{Name: nTermS, Type: 2}, nil // Константа
 	}
 	task.Input = task.Input[1:]
 	task.SkipSpaces()
 	rule := Trs{Name: nTermS,
-				Type: 1}
+		Type: 1}
 	arity := 0
 	trs, err := task.parseRule()
 	if err != nil {
