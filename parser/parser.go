@@ -3,6 +3,7 @@ package parser
 type Trs struct {
 	name string // Имя конструктора или переменной
 	Args []Trs  // конструкторы и переменные в аргументах
+	Type string // указание типа
 }
 
 type Rule struct {
