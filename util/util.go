@@ -83,7 +83,7 @@ func DFS2(task parser.Task) bool {
 }
 
 func visitVertex2(rule parser.Rule, used *map[string]Void, task parser.Task) bool {
-	(*used)[makeHash(rule.Left) + makeHash(rule.Right)] = Member
+	(*used)[makeHash(rule.Left)+makeHash(rule.Right)] = Member
 	var ts bool
 	for _, arg := range rule.Right.Args {
 		ts = false
@@ -91,8 +91,8 @@ func visitVertex2(rule parser.Rule, used *map[string]Void, task parser.Task) boo
 			_, err := Unify(arg, ruleN.Left)
 			if err == nil {
 				ts = true
-				if _, ok := (*used)[makeHash(ruleN.Left) + makeHash(ruleN.Right)]; !ok {
-					if !visitVertex(ruleN, used, task) {
+				if _, ok := (*used)[makeHash(ruleN.Left)+makeHash(ruleN.Right)]; !ok {
+					if !visitVertex2(ruleN, used, task) {
 						return false
 					}
 				}
