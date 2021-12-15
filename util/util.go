@@ -74,6 +74,15 @@ func visitVertex(rule parser.Rule, used *map[string]Void, task parser.Task) bool
 	return ts
 }
 
-func checkAlpha(rule parser.Trs) bool {
+func CheckAlpha(rule parser.Trs) bool {
+	for i, arg := range rule.Args {
+		for j := i + 1; j < len(rule.Args); j++ {
+			if reflect.DeepEqual(arg, rule.Args[j]) {
+			//fmt.Println(arg.Name + " : " + rule.Args[j].Name)
+			//if arg.Name == rule.Args[j].Name {
+				return false
+			}
+		}
+	}
 	return true
 }

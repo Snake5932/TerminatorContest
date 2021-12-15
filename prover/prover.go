@@ -25,17 +25,24 @@ func HandleTask(input []byte) {
 		file.WriteString("Syntax error")
 		//fmt.Println("Syntax error")
 	} else {
-		//for _, rule := range task.Rules {
-
-		//}
-		//fmt.Println(task.Rules)
-		//fmt.Println(util.Unify(task.Rules[0].Left, task.Rules[0].Right))
-		//fmt.Println(util.DFS(task))
-		res := util.DFS(task)
-		if res {
+		var alpha1 bool
+		var alpha2 bool
+		for _, rule := range task.Rules {
+			alpha1 = util.CheckAlpha(rule.Left)
+			alpha2 = util.CheckAlpha(rule.Right)
+			if !alpha1 || !alpha2 {
+				break
+			}
+		}
+		if !alpha1 || !alpha2 {
+			file.WriteString("Unknown")
+			//fmt.Println("Unknown alpha")
+		} else if util.DFS(task) {
 			file.WriteString("False")
+			//fmt.Println("False")
 		} else {
 			file.WriteString("Unknown")
+			//fmt.Println("Unknown")
 		}
 	}
 }
