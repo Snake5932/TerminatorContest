@@ -72,6 +72,36 @@ func visitVertex(rule parser.Rule, used *map[string]Void, task parser.Task) bool
 	return ts
 }
 
+func DFS2(task parser.Task) bool {
+	for _, rule := range task.Rules {
+		used := make(map[string]Void)
+		if visitVertex2(rule, &used, task) {
+			return true
+		}
+	}
+	return false
+}
+
+func visitVertex2(rule parser.Rule, used *map[string]Void, task parser.Task) bool {
+	(*used)[makeHash(rule.Left) + makeHash(rule.Right)] = Member
+	var ts bool
+	for _, arg := range rule.Right.Args {
+		ts = false
+		for _, ruleN := range task.Rules {
+			_, err := Unify(arg, ruleN.Left)
+			if err == nil {
+				ts = true
+				if _, ok := (*used)[makeHash(ruleN.Left) + makeHash(ruleN.Right)]; !ok {
+					if !visitVertex(ruleN, used, task) {
+						return false
+					}
+				}
+			}
+		}
+	}
+	return ts
+}
+
 func CheckAlpha(rule parser.Trs) bool {
 	for i, arg := range rule.Args {
 		for j := i + 1; j < len(rule.Args); j++ {
