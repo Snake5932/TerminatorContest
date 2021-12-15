@@ -3,7 +3,6 @@ package prover
 import (
 	"TFL/Contest/parser"
 	"TFL/Contest/util"
-	"fmt"
 	"os"
 	"reflect"
 )
@@ -35,11 +34,10 @@ func HandleTask(input []byte) {
 			}
 		}
 
-		if !alpha1 || !alpha2 {
-			file.WriteString("Unknown")
-		} else if util.DFS(task) || util.DFS2(task) {
+		if util.DFS(task) || util.DFS2(task) {
 			file.WriteString("False")
-			fmt.Println("False")
+		} else if !alpha1 || !alpha2 {
+			file.WriteString("Unknown")
 		} else if lexicographic(task) {
 			file.WriteString("True")
 		} else {
