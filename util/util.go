@@ -15,10 +15,9 @@ const (
 )
 
 func Unify(trs1, trs2 parser.Trs) (parser.Trs, error) {
-	//fmt.Println(trs1.Name + " : " + trs2.Name)
-	if trs1.Type == VAR && (trs2.Type == CTR || trs2.Type == CST) {
+	/*if trs1.Type == VAR && (trs2.Type == CTR || trs2.Type == CST) {
 		return trs2, nil
-	}
+	}*/
 	if trs2.Type == VAR && (trs1.Type == CTR || trs1.Type == CST) {
 		return trs1, nil
 	}
@@ -45,26 +44,23 @@ func Unify(trs1, trs2 parser.Trs) (parser.Trs, error) {
 }
 
 func DFS(task parser.Task) bool {
-	var used map[string]Void
-	used = make(map[string]Void)
 	for _, rule := range task.Rules {
-		if _, ok := used[rule.Left.Name + rule.Right.Name]; !ok {
-			if visitVertex(rule, &used, task) {
-				return true
-			}
+		used := make(map[string]Void)
+		if visitVertex(rule, &used, task) {
+			return true
 		}
 	}
 	return false
 }
 
 func visitVertex(rule parser.Rule, used *map[string]Void, task parser.Task) bool {
-	(*used)[rule.Left.Name + rule.Right.Name] = Member
+	(*used)[makeHash(rule.Left) + makeHash(rule.Right)] = Member
 	ts := false
 	for _, ruleN := range task.Rules {
 		_, err := Unify(rule.Right, ruleN.Left)
 		if err == nil {
 			ts = true
-			if _, ok := (*used)[ruleN.Left.Name + ruleN.Right.Name]; !ok {
+			if _, ok := (*used)[makeHash(ruleN.Left) + makeHash(ruleN.Right)]; !ok {
 				if !visitVertex(ruleN, used, task) {
 					return false
 				}
@@ -85,4 +81,12 @@ func CheckAlpha(rule parser.Trs) bool {
 		}
 	}
 	return true
+}
+
+func makeHash(trs parser.Trs) string {
+	res := trs.Name + "("
+	for _, arg := range trs.Args {
+		res = res + makeHash(arg)
+	}
+	return res + ")"
 }
