@@ -17,9 +17,6 @@ const (
 )
 
 func Unify(trs1, trs2 parser.Trs) (parser.Trs, error) {
-	if trs1.Type == VAR && (trs2.Type == CTR || trs2.Type == CST) {
-		return trs2, nil
-	}
 	if trs2.Type == VAR && (trs1.Type == CTR || trs1.Type == CST) {
 		return trs1, nil
 	}
@@ -106,8 +103,6 @@ func CheckAlpha(rule parser.Trs) bool {
 	for i, arg := range rule.Args {
 		for j := i + 1; j < len(rule.Args); j++ {
 			if reflect.DeepEqual(arg, rule.Args[j]) {
-				//fmt.Println(arg.Name + " : " + rule.Args[j].Name)
-				//if arg.Name == rule.Args[j].Name {
 				return false
 			}
 		}

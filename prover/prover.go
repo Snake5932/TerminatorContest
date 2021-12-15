@@ -5,6 +5,7 @@ import (
 	"TFL/Contest/util"
 	"fmt"
 	"os"
+	"reflect"
 )
 
 const (
@@ -23,29 +24,26 @@ func HandleTask(input []byte) {
 	defer file.Close()
 	if err != nil {
 		file.WriteString("Syntax error")
-		//fmt.Println("Syntax error")
 	} else {
-		//var alpha1 bool
-		//var alpha2 bool
-		//for _, rule := range task.Rules {
-		//	alpha1 = util.CheckAlpha(rule.Left)
-		//	alpha2 = util.CheckAlpha(rule.Right)
-		//	if !alpha1 || !alpha2 {
-		//		break
-		//	}
-		//}
-		//if !alpha1 || !alpha2 {
-		//	file.WriteString("Unknown")
-		//	//fmt.Println("Unknown alpha")
-		//} else
-		if util.DFS(task) || util.DFS2(task) {
+		var alpha1 bool
+		var alpha2 bool
+		for _, rule := range task.Rules {
+			alpha1 = util.CheckAlpha(rule.Left)
+			alpha2 = util.CheckAlpha(rule.Right)
+			if !alpha1 || !alpha2 {
+				break
+			}
+		}
+
+		if !alpha1 || !alpha2 {
+			file.WriteString("Unknown")
+		} else if util.DFS(task) || util.DFS2(task) {
 			file.WriteString("False")
 			fmt.Println("False")
 		} else if lexicographic(task) {
 			file.WriteString("True")
 		} else {
 			file.WriteString("Unknown")
-			//fmt.Println("Unknown")
 		}
 	}
 }
