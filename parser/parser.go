@@ -103,7 +103,7 @@ func (task *Task) parseVars() error {
 		task.SkipSpaces()
 	}
 	if task.Input[0] != '[' {
-		return errors.New("wrong vars list opening")
+		return nil
 	}
 	task.Input = task.Input[1:]
 	if task.Input[0] != ']' {
