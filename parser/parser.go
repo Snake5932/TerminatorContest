@@ -188,6 +188,8 @@ func (task *Task) parseRule() (Trs, error) {
 			if task.Constructors[nTermS] != 0 {
 				return Trs{}, errors.New("polymorphism: " + nTermS)
 			}
+		} else {
+			task.Constructors[nTermS] = 0
 		}
 		return Trs{Name: nTermS, Type: 2}, nil // Константа
 	}
