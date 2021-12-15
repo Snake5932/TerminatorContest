@@ -3,9 +3,11 @@ package util
 import (
 	"TFL/Contest/parser"
 	"errors"
+	"reflect"
 )
 
-type Void struct {}
+type Void struct{}
+
 var Member Void
 
 const (
@@ -15,9 +17,9 @@ const (
 )
 
 func Unify(trs1, trs2 parser.Trs) (parser.Trs, error) {
-	/*if trs1.Type == VAR && (trs2.Type == CTR || trs2.Type == CST) {
+	if trs1.Type == VAR && (trs2.Type == CTR || trs2.Type == CST) {
 		return trs2, nil
-	}*/
+	}
 	if trs2.Type == VAR && (trs1.Type == CTR || trs1.Type == CST) {
 		return trs1, nil
 	}
@@ -54,13 +56,13 @@ func DFS(task parser.Task) bool {
 }
 
 func visitVertex(rule parser.Rule, used *map[string]Void, task parser.Task) bool {
-	(*used)[makeHash(rule.Left) + makeHash(rule.Right)] = Member
+	(*used)[makeHash(rule.Left)+makeHash(rule.Right)] = Member
 	ts := false
 	for _, ruleN := range task.Rules {
 		_, err := Unify(rule.Right, ruleN.Left)
 		if err == nil {
 			ts = true
-			if _, ok := (*used)[makeHash(ruleN.Left) + makeHash(ruleN.Right)]; !ok {
+			if _, ok := (*used)[makeHash(ruleN.Left)+makeHash(ruleN.Right)]; !ok {
 				if !visitVertex(ruleN, used, task) {
 					return false
 				}
@@ -74,8 +76,8 @@ func CheckAlpha(rule parser.Trs) bool {
 	for i, arg := range rule.Args {
 		for j := i + 1; j < len(rule.Args); j++ {
 			if reflect.DeepEqual(arg, rule.Args[j]) {
-			//fmt.Println(arg.Name + " : " + rule.Args[j].Name)
-			//if arg.Name == rule.Args[j].Name {
+				//fmt.Println(arg.Name + " : " + rule.Args[j].Name)
+				//if arg.Name == rule.Args[j].Name {
 				return false
 			}
 		}
