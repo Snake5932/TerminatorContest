@@ -6,6 +6,12 @@ import (
 	"strconv"
 )
 
+const (
+	VAR = iota
+	CTR
+	CST
+)
+
 type Trs struct {
 	Name string // Имя конструктора или переменной
 	Args []Trs  // конструкторы и переменные в аргументах
@@ -173,7 +179,7 @@ func (task *Task) parseRule() (Trs, error) {
 			task.Vars[nTermS] += 1
 			alpha := strconv.Itoa(task.Vars[nTermS])
 			return Trs{Name: nTermS + alpha,
-				Type: 0}, nil
+				Type: VAR}, nil
 		}
 		//if _, ok := task.Constructors[nTermS]; ok {
 		//	if task.Constructors[nTermS] != 0 {
@@ -191,12 +197,15 @@ func (task *Task) parseRule() (Trs, error) {
 		} else {
 			task.Constructors[nTermS] = 0
 		}
-		return Trs{Name: nTermS, Type: 2}, nil // Константа
+		return Trs{Name: nTermS, Type: CST}, nil // Константа
 	}
 	task.Input = task.Input[1:]
 	task.SkipSpaces()
+	if _, ok := task.Vars[nTermS]; ok {
+		return Trs{}, errors.New("variable redeclared as constructor")
+	}
 	rule := Trs{Name: nTermS,
-		Type: 1}
+		Type: CTR}
 	arity := 0
 	trs, err := task.parseRule()
 	if err != nil {
