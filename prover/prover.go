@@ -44,7 +44,7 @@ func unify(trs1, trs2 parser.Trs) (parser.Trs, error) {
 
 func HandleTask(input []byte) {
 	task := parser.Task{}
-	task.Init()
+	task.Init(input)
 	err := task.ParseInput()
 	if err != nil {
 		fmt.Println("error while parsing: " + err.Error())
