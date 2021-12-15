@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	input, err := ioutil.ReadFile("./resources/trs3.txt")
+	input, err := ioutil.ReadFile("test.trs")
 	if err != nil {
 		fmt.Println(err)
 		return

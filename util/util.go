@@ -74,3 +74,6 @@ func visitVertex(rule parser.Rule, used *map[string]Void, task parser.Task) bool
 	return ts
 }
 
+func checkAlpha(rule parser.Trs) bool {
+	return true
+}
