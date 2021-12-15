@@ -5,8 +5,7 @@ import (
 	"errors"
 )
 
-type Void struct{}
-
+type Void struct {}
 var Member Void
 
 const (
@@ -49,7 +48,7 @@ func DFS(task parser.Task) bool {
 	var used map[string]Void
 	used = make(map[string]Void)
 	for _, rule := range task.Rules {
-		if _, ok := used[rule.Left.Name+rule.Right.Name]; !ok {
+		if _, ok := used[rule.Left.Name + rule.Right.Name]; !ok {
 			if visitVertex(rule, &used, task) {
 				return true
 			}
@@ -59,13 +58,13 @@ func DFS(task parser.Task) bool {
 }
 
 func visitVertex(rule parser.Rule, used *map[string]Void, task parser.Task) bool {
-	(*used)[rule.Left.Name+rule.Right.Name] = Member
+	(*used)[rule.Left.Name + rule.Right.Name] = Member
 	ts := false
 	for _, ruleN := range task.Rules {
 		_, err := Unify(rule.Right, ruleN.Left)
 		if err == nil {
 			ts = true
-			if _, ok := (*used)[ruleN.Left.Name+ruleN.Right.Name]; !ok {
+			if _, ok := (*used)[ruleN.Left.Name + ruleN.Right.Name]; !ok {
 				if !visitVertex(ruleN, used, task) {
 					return false
 				}
@@ -73,4 +72,17 @@ func visitVertex(rule parser.Rule, used *map[string]Void, task parser.Task) bool
 		}
 	}
 	return ts
+}
+
+func CheckAlpha(rule parser.Trs) bool {
+	for i, arg := range rule.Args {
+		for j := i + 1; j < len(rule.Args); j++ {
+			if reflect.DeepEqual(arg, rule.Args[j]) {
+			//fmt.Println(arg.Name + " : " + rule.Args[j].Name)
+			//if arg.Name == rule.Args[j].Name {
+				return false
+			}
+		}
+	}
+	return true
 }

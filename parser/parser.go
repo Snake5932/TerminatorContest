@@ -2,8 +2,6 @@ package parser
 
 import (
 	"errors"
-	"fmt"
-	"strconv"
 )
 
 const (
@@ -48,7 +46,6 @@ func (task *Task) getIdent() (string, error) {
 	}
 	nSymb := task.Input[0]
 	if nSymb < 'A' || (nSymb > 'Z' && nSymb < 'a') || nSymb > 'z' {
-		fmt.Println(nSymb)
 		return "", errors.New("wrong declaration symbol")
 	}
 	task.Input = task.Input[1:]
@@ -177,8 +174,8 @@ func (task *Task) parseRule() (Trs, error) {
 	if len(task.Input) == 0 || task.Input[0] != '(' {
 		if _, ok := task.Vars[nTermS]; ok {
 			task.Vars[nTermS] += 1
-			alpha := strconv.Itoa(task.Vars[nTermS])
-			return Trs{Name: nTermS + alpha,
+			//alpha := strconv.Itoa(task.Vars[nTermS])
+			return Trs{Name: nTermS, //+ alpha,
 				Type: VAR}, nil
 		}
 		//if _, ok := task.Constructors[nTermS]; ok {

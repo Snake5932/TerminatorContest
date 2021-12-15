@@ -1,0 +1,6 @@
+[x]]
+f(x,g(x))->f(g(x),g(x))
+f(D,x)->D
+g(E)->f(E,E)
+f(x,f(y,z))->f(f(x,y),z)
+g(x)->f(f(f(x,H),f(D,E)),E)
